@@ -1,17 +1,17 @@
 # config/train_shakespeare_char.py - OPTIMIZED VERSION
 # This should give you much better performance
 
-out_dir = "out_tinystories"
+out_dir = "out-shakespeare"
 eval_interval = 500  # less frequent evaluation
 eval_iters = 50  # fewer eval iterations
 log_interval = 10  # more frequent logging to see progress
 
 always_save_checkpoint = False
 wandb_log = False
-wandb_project = "tinystories"
+wandb_project = "shakespeare"
 wandb_run_name = "mini-gpt"
 
-dataset = "tinystories"
+dataset = "shakespeare"
 
 # KEY FIXES FOR SPEED:
 gradient_accumulation_steps = 1  # Was 2, now 1 - MAJOR speedup!
