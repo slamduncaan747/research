@@ -21,7 +21,7 @@ block_size = 512  # Was 1024, now 512 - fits in memory better
 # Model size (this is fine)
 n_layer = 6
 n_head = 6
-n_embd = 512
+n_embd = 768
 dropout = 0.2
 
 learning_rate = 5e-3
