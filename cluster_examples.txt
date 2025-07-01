@@ -1,0 +1,280 @@
+CURRICULUM LEARNING CLUSTERS
+================================================================================
+
+CLUSTER 0
+Length range: 2-4 tokens
+MTLD range: 1.00-4.24
+Sample size: 1244
+----------------------------------------
+
+LOW COMPLEXITY:
+Length: 2, MTLD: 1.00
+Text: , �
+
+MEDIUM COMPLEXITY:
+Length: 3, MTLD: 3.00
+Text: 't believe her
+
+HIGH COMPLEXITY:
+Length: 4, MTLD: 4.24
+Text:  as high as he
+
+================================================================================
+CLUSTER 1
+Length range: 5-14 tokens
+MTLD range: 1.00-8.00
+Sample size: 2340
+----------------------------------------
+
+LOW COMPLEXITY:
+Length: 5, MTLD: 1.00
+Text:  angry.
+
+"
+
+MEDIUM COMPLEXITY:
+Length: 7, MTLD: 6.00
+Text:  with toys in the lovely crib.
+
+HIGH COMPLEXITY:
+Length: 10, MTLD: 8.00
+Text: my. Timmy loved to play golf with his
+
+================================================================================
+CLUSTER 2
+Length range: 6-14 tokens
+MTLD range: 8.00-54.88
+Sample size: 1930
+----------------------------------------
+
+LOW COMPLEXITY:
+Length: 9, MTLD: 8.00
+Text:  alive. His lemon hat gave him a happy
+
+MEDIUM COMPLEXITY:
+Length: 14, MTLD: 12.00
+Text:  each choose one fruit to take home. Sara saw a big, round
+
+HIGH COMPLEXITY:
+Length: 14, MTLD: 54.88
+Text:  you feel if Sam took your toys and did not let you play with
+
+================================================================================
+CLUSTER 3
+Length range: 15-39 tokens
+MTLD range: 4.00-29.17
+Sample size: 2612
+----------------------------------------
+
+LOW COMPLEXITY:
+Length: 16, MTLD: 4.00
+Text:  Itâ€™s glowing!â€
+
+Ellaâ€™
+
+MEDIUM COMPLEXITY:
+Length: 21, MTLD: 19.00
+Text:  care of the forest. From that day on, Benny made sure to always look out for his home in
+
+HIGH COMPLEXITY:
+Length: 33, MTLD: 29.17
+Text:  and read. He thought the book would make him learn new things and have new adventures. He said, "I want the big book, please."
+
+The
+
+================================================================================
+CLUSTER 4
+Length range: 15-39 tokens
+MTLD range: 29.17-47.79
+Sample size: 2557
+----------------------------------------
+
+LOW COMPLEXITY:
+Length: 31, MTLD: 29.17
+Text:  smiled and said, "Now let's go find a way to play together." 
+
+Mary smiled and together they went out to find a new adventure
+
+MEDIUM COMPLEXITY:
+Length: 29, MTLD: 37.86
+Text:  and saw what happened. She helped Lily fix the house and told her that accidents happen. Lily felt better and was proud of her fixed house.
+
+HIGH COMPLEXITY:
+Length: 39, MTLD: 47.79
+Text:  wished she had not wanted the ice cream. She wished someone would help her. But no one came. She was alone and hurt.
+
+The man with the cart heard her cry. He
+
+================================================================================
+CLUSTER 5
+Length range: 15-39 tokens
+MTLD range: 47.79-286.72
+Sample size: 2549
+----------------------------------------
+
+LOW COMPLEXITY:
+Length: 39, MTLD: 47.79
+Text:  and got out of bed. She didn't want to disappoint her mum, so she was obedient and followed her. 
+
+As they stepped outside, the sun was shining and there was a
+
+MEDIUM COMPLEXITY:
+Length: 16, MTLD: 63.00
+Text:  she uncovered an orange and black striped cat. She couldn't take her eyes away
+
+HIGH COMPLEXITY:
+Length: 37, MTLD: 286.72
+Text: .
+
+Max learned a valuable lesson that day - being persistent and doing the right thing is more important than stealing. He never stole again and his collar was returned to its rightful owner
+
+================================================================================
+CLUSTER 6
+Length range: 40-99 tokens
+MTLD range: 10.42-40.85
+Sample size: 3486
+----------------------------------------
+
+LOW COMPLEXITY:
+Length: 45, MTLD: 10.42
+Text: 
+
+They rush to her. They hug her and comfort her. They clean her wound and bandage it. They tell her it is okay. They tell her they love her. They tell her they are proud of her
+
+MEDIUM COMPLEXITY:
+Length: 51, MTLD: 33.34
+Text:  Mabel had ever seen!
+
+Mabel was so happy. She hugged the bow and ran back to her mum with it. 
+
+Mabel and her mum were both so excited, and Mabel took the sweet bow home with her that
+
+HIGH COMPLEXITY:
+Length: 65, MTLD: 40.85
+Text:  hills and across rivers. He dug and dug but still couldn't find it. He kept looking and looking until one day he found the magical trap.
+
+He was so happy that he could hardly believe it. He quickly set the trap and waited. Soon enough, money starting appearing in the trap. The man was thrilled
+
+================================================================================
+CLUSTER 7
+Length range: 40-99 tokens
+MTLD range: 40.86-54.27
+Sample size: 3482
+----------------------------------------
+
+LOW COMPLEXITY:
+Length: 85, MTLD: 40.86
+Text: "Because he did not share his blocks with me!" Lily said.
+
+"That is not a good reason, Lily. You should not break things that belong to others. That is not nice. You need to say sorry to Ben and help him pick up the blocks. That is your punishment." Mama said.
+
+Lily felt sorry. She knew she had done something bad. She said sorry to Ben and
+
+MEDIUM COMPLEXITY:
+Length: 50, MTLD: 47.39
+Text:  other room. She arranged her dolls and toys on the couch. She made a big comfortable bed on the couch for the dolls.
+
+Then the mommy came in with a big bowl of delicious lunch. The little girl was so happy to see
+
+HIGH COMPLEXITY:
+Length: 85, MTLD: 54.27
+Text:  you, Sara. You are very nice. I will share my snacks with you on the plane. Can I hold your soft bear too?"
+
+Sara nods. She gives Tom her ticket and her soft bear. They hug. Mom sees them and smiles. She says, "You are very good twins. I'm proud of you. Come on, let's go. Our plane is here. We can fly now
+
+================================================================================
+CLUSTER 8
+Length range: 40-99 tokens
+MTLD range: 54.29-493.92
+Sample size: 3492
+----------------------------------------
+
+LOW COMPLEXITY:
+Length: 93, MTLD: 54.29
+Text: . Suddenly, Jane saw an old man walking towards her.
+
+The old man said: "Are you okay, little one?"
+
+Jane felt very embarrassed, so she said "I'm sorry". Then she remembered to be polite and said "Thank you for asking me. I'm okay."
+
+The old man smiled and said: "It's a nice day to explore the city, isn't it?" Jane smiled and thanked him again.
+
+
+
+MEDIUM COMPLEXITY:
+Length: 54, MTLD: 64.51
+Text:  didn't have enough money to buy one. She felt guilty because she knew that she shouldn't take one without paying. So she decided to relax and think of another idea.
+
+Then the girl had a brilliant idea! She went to her neighbour's house and asked
+
+HIGH COMPLEXITY:
+Length: 51, MTLD: 493.92
+Text:  to find his mum's arms open wide and waiting. She hugged him tightly and said: "I was so worried about you. Don't ever do anything like this again!"
+
+Jack learned a valuable lesson that day - even if something looks fun,
+
+================================================================================
+CLUSTER 9
+Length range: 100-200 tokens
+MTLD range: 12.33-46.99
+Sample size: 8051
+----------------------------------------
+
+LOW COMPLEXITY:
+Length: 103, MTLD: 12.33
+Text:  sighed. She hugged Sara. She said she loved Sara. She said she understood Sara. She said she would help Sara. She said they would fix the pastry together. She said they would make a new pastry together. She said they would say sorry to the guest together.
+
+Sara smiled. She said she loved her mom. She said she was happy. She said she would help her mom. She said they would fix the pastry together. She said they would make a new pastry together. She said
+
+MEDIUM COMPLEXITY:
+Length: 182, MTLD: 38.53
+Text:  be careful," the firefighter says. He gives them the hose. Tom and Lily take turns to spray the water. They have fun. They spray the water on the grass, on the trees, on the flowers. They spray the water on each other. They laugh and get wet.
+
+"Thank you, firefighter," Tom and Lily say. "That was fun."
+
+"You're welcome, kids," the firefighter says. "But remember, this is not a toy. This is a tool. I use it to put out fires. Fires are bad and dangerous. You should never play with fire. Do you understand?"
+
+"Yes, we understand," Tom and Lily say. "Fire is bad. Water is good."
+
+The firefighter nods. He takes the hose back. He turns off the water. He puts the hose back on the truck. He waves goodbye to Tom
+
+HIGH COMPLEXITY:
+Length: 154, MTLD: 46.99
+Text:  shining and the sky was blue. It was a perfect day to play outside.
+
+As Tim started to play, he saw a small, helpless bird on the ground. The bird looked sad and could not fly. Tim wanted to help the bird, so he called his friends over. They all tried to think of a way to help the bird feel better.
+
+Tim and his friends decided to make a soft bed for the bird using leaves and grass. They gently picked up the bird and placed it on the bed. The bird started to feel better and soon, it could fly again. The bird was so happy that it decided to stay and watch Tim and his friends play basketball. They all had a great day at the park and Tim was glad he could
+
+================================================================================
+CLUSTER 10
+Length range: 100-200 tokens
+MTLD range: 46.99-126.00
+Sample size: 8051
+----------------------------------------
+
+LOW COMPLEXITY:
+Length: 153, MTLD: 46.99
+Text: Once there was a little lamb named Lily. Lily was very happy and loved running and playing in the fields. Every day, she would spend hours running and leaping in the sunshine and she was always full of joy. But one day, Lily's mom said something to her that made her sad. 
+
+"Lily, you must remember to always eat your meat," her mom said. "It is very important for your health."
+
+At first, Lily was confused. Meat was something she didn't like and she wanted to keep playing. But her mom was very serious and Lily knew she had to do it. 
+
+So, Lily started eating her meat every day, and she found it was not so bad after all. Soon, she
+
+MEDIUM COMPLEXITY:
+Length: 159, MTLD: 56.51
+Text: Once upon a time, there was a strong bull. He loved to play with the other animals in the countryside. One day, he saw an interesting attach and wanted to give it a try. He thought it looked like it would be fun. He worked and worked, attaching it to the ground with his strong hooves. After a few tries, he finally succeeded. 
+
+The bull was so excited and ran back to tell all the other animals. He couldn't believe the attach worked. As they all watched, the bull had fun playing with the attach. He twirled it around, jumped over it and ran alongside it. Everyone was amazed by the strong bull's strength and skill.
+
+The other animals started to attach their own attaches to the ground. They laughed and cheered
+
+HIGH COMPLEXITY:
+Length: 103, MTLD: 126.00
+Text:  and said â€œYes, that is perfect, what else do you want?â€ Joey filled his basket with markers, glitter and glue. He was so happy and kept pointing to all the cute things he found. 
+
+Finally, Mommy said â€œThatâ€™s enough! Letâ€™s take these supplies home.â€ She hugged him and said with a smile â€œYou feel much better now, donâ€™t
+
+================================================================================

@@ -1,0 +1,8 @@
+https://proceedings.mlr.press/v70/graves17a/graves17a.pdf - multi armed bandit for curriculum learning
+https://arxiv.org/html/2405.07490v1 - how to separate curriculum
+https://arxiv.org/abs/2309.09400 - potential dataset
+https://arxiv.org/pdf/1609.07843v1 - wiki-text dataset
+https://arxiv.org/pdf/2001.08361 - llm Scaling laws
+*** - https://arxiv.org/pdf/2506.11300 difficulty metrics, pacer approaches, a real solid overview
+The Chinchilla paper (compute-optimal training)
+"Efficient Benchmarking of Language Models" (ACL 2024)
