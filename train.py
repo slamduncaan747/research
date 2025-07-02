@@ -34,6 +34,7 @@ from model import GPTConfig, GPT
 # I/O
 out_dir = "out"
 eval_interval = 2000
+save_interval = 0
 log_interval = 1
 eval_iters = 200
 eval_only = False  # if True, script exits right after the first eval
