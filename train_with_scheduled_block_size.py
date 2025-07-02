@@ -138,9 +138,13 @@ def get_batch(split, block_size_multiple=100):
     # We recreate np.memmap every batch to avoid a memory leak, as per
     # https://stackoverflow.com/questions/45132940/numpy-memmap-memory-usage-want-to-iterate-once/61472122#61472122
     if split == "train":
-        data = np.memmap(os.path.join(data_dir, "train.bin"), dtype=np.uint16, mode="r")
+        data = np.memmap(
+            "/content/drive/MyDrive/tinystories/train.bin", dtype=np.uint16, mode="r"
+        )
     else:
-        data = np.memmap(os.path.join(data_dir, "val.bin"), dtype=np.uint16, mode="r")
+        data = np.memmap(
+            "/content/drive/MyDrive/tinystories/val.bin", dtype=np.uint16, mode="r"
+        )
     ix = torch.randint(len(data) - block_size, (batch_size,))
     _block_size = int(block_size * (1 / block_size_multiple))
     x = torch.stack(
@@ -377,11 +381,10 @@ while True:
                 loss / gradient_accumulation_steps
             )  # scale the loss to account for gradient accumulation
         # immediately async prefetch next batch while model is doing the forward pass on the GPU
-        if iter_num < max_iters / 2:
-            curriculum_level = max(1, int((1 - (iter_num / (max_iters / 2))) * 99 + 1))
-        else:
-            curriculum_level = 1
-
+        t = iter_num / max_iters
+        curriculum_level = (
+            1 if t >= 0.75 else max(1, int(99 / (1 + np.exp(12 * t - 6))))
+        )
         X, Y, _block_size = get_batch("train", curriculum_level)
         # backward pass, with gradient scaling if training in fp16
         scaler.scale(loss).backward()

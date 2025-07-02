@@ -16,7 +16,7 @@ dataset = "shakespeare"
 
 # KEY FIXES FOR SPEED:
 gradient_accumulation_steps = 1  # Was 2, now 1 - MAJOR speedup!
-batch_size = 16  # Was 16, now 64 - better GPU utilization
+batch_size = 128  # Was 16, now 64 - better GPU utilization
 block_size = 512  # Was 1024, now 512 - fits in memory better
 
 # Model size (this is fine)
@@ -26,8 +26,8 @@ n_embd = 768
 dropout = 0.2
 
 learning_rate = 1e-3
-max_iters = 2000  # Reduced for testing
-lr_decay_iters = 2000
+max_iters = 4000  # Reduced for testing
+lr_decay_iters = 4000
 min_lr = 1e-4
 beta2 = 0.99
 warmup_iters = 100

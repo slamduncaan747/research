@@ -138,9 +138,13 @@ def get_batch(split):
     # We recreate np.memmap every batch to avoid a memory leak, as per
     # https://stackoverflow.com/questions/45132940/numpy-memmap-memory-usage-want-to-iterate-once/61472122#61472122
     if split == "train":
-        data = np.memmap(os.path.join(data_dir, "train.bin"), dtype=np.uint16, mode="r")
+        data = np.memmap(
+            "/content/drive/MyDrive/tinystories/train.bin", dtype=np.uint16, mode="r"
+        )
     else:
-        data = np.memmap(os.path.join(data_dir, "val.bin"), dtype=np.uint16, mode="r")
+        data = np.memmap(
+            "/content/drive/MyDrive/tinystories/val.bin", dtype=np.uint16, mode="r"
+        )
     ix = torch.randint(len(data) - block_size, (batch_size,))
     x = torch.stack(
         [torch.from_numpy((data[i : i + block_size]).astype(np.int64)) for i in ix]
@@ -321,6 +325,7 @@ while True:
                     "val/loss": losses["val"],
                     "lr": lr,
                     "mfu": running_mfu * 100,  # convert to percentage
+                    "tokens": iter_num * tokens_per_iter,
                 }
             )
         if losses["val"] < best_val_loss or always_save_checkpoint:
