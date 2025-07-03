@@ -16,7 +16,7 @@ dataset = "shakespeare"
 
 # KEY FIXES FOR SPEED:
 gradient_accumulation_steps = 1  # Was 2, now 1 - MAJOR speedup!
-batch_size = 128  # Was 16, now 64 - better GPU utilization
+batch_size = 256  # Was 16, now 64 - better GPU utilization
 block_size = 512  # Was 1024, now 512 - fits in memory better
 
 # Model size (this is fine)
