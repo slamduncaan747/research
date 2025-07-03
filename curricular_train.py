@@ -21,6 +21,10 @@ import time
 import math
 import pickle
 from contextlib import nullcontext
+import random
+
+from pathlib import Path
+import json
 
 import numpy as np
 import torch
@@ -34,8 +38,8 @@ from model import GPTConfig, GPT
 # I/O
 out_dir = "out"
 eval_interval = 2000
-save_interval = eval_interval
 eval_train = False  # if True, also evaluate on the training set
+save_interval = 0
 log_interval = 1
 eval_iters = 200
 eval_only = False  # if True, script exits right after the first eval
@@ -131,37 +135,160 @@ ctx = (
     else torch.amp.autocast(device_type=device_type, dtype=ptdtype)
 )
 
+
+def load_curriculum_metadata(data_dir="curriculum_bins"):
+    """Load metadata about available clusters"""
+    global metadata, curriculum_dir
+    curriculum_dir = data_dir
+
+    metadata_file = Path(data_dir) / "metadata.json"
+    with open(metadata_file, "r") as f:
+        metadata = json.load(f)
+
+    print(f"Loaded curriculum with {len(metadata['clusters'])} clusters")
+    for cluster_id, info in metadata["clusters"].items():
+        print(
+            f"  Cluster {cluster_id}: {info['samples']} samples, avg_length={info['avg_length']:.1f}"
+        )
+
+
 # poor man's data loader
-data_dir = os.path.join("../../tmp", dataset)
+data_dir = os.path.join("../../tmp/tinystories", dataset)
+load_curriculum_metadata("curriculum_bins")
 
 
-def get_batch(split, block_size_multiple=100):
-    # We recreate np.memmap every batch to avoid a memory leak, as per
-    # https://stackoverflow.com/questions/45132940/numpy-memmap-memory-usage-want-to-iterate-once/61472122#61472122
-    if split == "train":
-        data = np.memmap("../../tmp/tinystories/train.bin", dtype=np.uint16, mode="r")
+cluster_files = {}
+metadata = None
+curriculum_dir = "curriculum_bins"  # Update this path as needed
+
+
+def get_batch(split, block_size, batch_size, device_type, device, mode="random"):
+    """
+    Get a batch of data from curriculum bins
+
+    Args:
+        split: "train" or "val"
+        block_size: context length
+        batch_size: batch size
+        device_type: "cuda" or "cpu"
+        device: torch device
+        mode: "random" (random from all clusters), "cluster_X" (specific cluster), or "curriculum" (scheduled)
+    """
+
+    # Load metadata if not already loaded
+    if metadata is None:
+        load_curriculum_metadata()
+
+    # Handle validation split
+    if split == "val":
+        data = np.memmap(f"{curriculum_dir}/val.bin", dtype=np.uint16, mode="r")
+        return create_batch_from_data(data, block_size, batch_size, device_type, device)
+
+    # Handle training split
+    if mode == "random":
+        # Randomly select from all clusters
+        return get_random_batch(block_size, batch_size, device_type, device)
+    elif mode.startswith("cluster_"):
+        # Use specific cluster
+        cluster_id = mode.split("_")[1]
+        return get_cluster_batch(
+            cluster_id, block_size, batch_size, device_type, device
+        )
     else:
-        data = np.memmap("../../tmp/tinystories/val.bin", dtype=np.uint16, mode="r")
+        # Default to random
+        return get_random_batch(block_size, batch_size, device_type, device)
+
+
+def get_random_batch(block_size, batch_size, device_type, device):
+    """Get a batch by randomly sampling from all clusters"""
+
+    # Get all available clusters
+    available_clusters = list(metadata["clusters"].keys())
+
+    # For each sample in the batch, randomly pick a cluster
+    batch_samples = []
+
+    for _ in range(batch_size):
+        # Randomly select a cluster
+        cluster_id = random.choice(available_clusters)
+
+        # Get data from that cluster
+        cluster_file = f"{curriculum_dir}/cluster_{cluster_id}.bin"
+        data = np.memmap(cluster_file, dtype=np.uint16, mode="r")
+
+        # Random position in this cluster
+        if len(data) <= block_size:
+            continue  # Skip if cluster is too small
+
+        start_idx = random.randint(0, len(data) - block_size - 1)
+
+        # Get x and y
+        x = torch.from_numpy(
+            (data[start_idx : start_idx + block_size]).astype(np.int64)
+        )
+        y = torch.from_numpy(
+            (data[start_idx + 1 : start_idx + 1 + block_size]).astype(np.int64)
+        )
+
+        batch_samples.append((x, y))
+
+    # Stack all samples
+    if len(batch_samples) == 0:
+        # Fallback: use first cluster if no valid samples
+        cluster_id = available_clusters[0]
+        cluster_file = f"{curriculum_dir}/cluster_{cluster_id}.bin"
+        data = np.memmap(cluster_file, dtype=np.uint16, mode="r")
+        return create_batch_from_data(data, block_size, batch_size, device_type, device)
+
+    # Pad batch if needed
+    while len(batch_samples) < batch_size:
+        batch_samples.append(batch_samples[-1])  # Duplicate last sample
+
+    x_batch = torch.stack([sample[0] for sample in batch_samples])
+    y_batch = torch.stack([sample[1] for sample in batch_samples])
+
+    # Move to device
+    if device_type == "cuda":
+        x_batch, y_batch = x_batch.pin_memory().to(
+            device, non_blocking=True
+        ), y_batch.pin_memory().to(device, non_blocking=True)
+    else:
+        x_batch, y_batch = x_batch.to(device), y_batch.to(device)
+
+    return x_batch, y_batch
+
+
+def get_cluster_batch(cluster_id, block_size, batch_size, device_type, device):
+    """Get a batch from a specific cluster"""
+
+    cluster_file = f"{curriculum_dir}/cluster_{cluster_id}.bin"
+    data = np.memmap(cluster_file, dtype=np.uint16, mode="r")
+
+    return create_batch_from_data(data, block_size, batch_size, device_type, device)
+
+
+def create_batch_from_data(data, block_size, batch_size, device_type, device):
+    """Create a batch from a data array (original logic)"""
+
     ix = torch.randint(len(data) - block_size, (batch_size,))
-    _block_size = int(block_size * (1 / block_size_multiple))
     x = torch.stack(
-        [torch.from_numpy((data[i : i + _block_size]).astype(np.int64)) for i in ix]
+        [torch.from_numpy((data[i : i + block_size]).astype(np.int64)) for i in ix]
     )
     y = torch.stack(
         [
-            torch.from_numpy((data[i + 1 : i + 1 + _block_size]).astype(np.int64))
+            torch.from_numpy((data[i + 1 : i + 1 + block_size]).astype(np.int64))
             for i in ix
         ]
     )
 
     if device_type == "cuda":
-        # pin arrays x,y, which allows us to move them to GPU asynchronously (non_blocking=True)
         x, y = x.pin_memory().to(device, non_blocking=True), y.pin_memory().to(
             device, non_blocking=True
         )
     else:
         x, y = x.to(device), y.to(device)
-    return x, y, _block_size
+
+    return x, y
 
 
 # init these up here, can override if init_from='resume' (i.e. from a checkpoint)
@@ -271,7 +398,7 @@ def estimate_loss():
     for split in splits:
         losses = torch.zeros(eval_iters)
         for k in range(eval_iters):
-            X, Y, _block_size = get_batch(split, 1)
+            X, Y = get_batch(split)
             with ctx:
                 logits, loss = model(X, Y)
             losses[k] = loss.item()
@@ -302,17 +429,11 @@ if wandb_log and master_process:
     wandb.init(project=wandb_project, name=wandb_run_name, config=config)
 
 # training loop
-X, Y, first_block_size = get_batch("train", 100)  # fetch the very first batch
+X, Y = get_batch("train")  # fetch the very first batch
 t0 = time.time()
 local_iter_num = 0  # number of iterations in the lifetime of this process
 raw_model = model.module if ddp else model  # unwrap DDP container if needed
 running_mfu = -1.0
-total_tokens_processed = first_block_size * gradient_accumulation_steps * batch_size
-iter_tokens_processed = 0
-print(total_tokens_processed)
-print(first_block_size)
-start_time = time.time()
-eval_time = time.time()  # for logging purposes
 while True:
 
     # determine and set the learning rate for this iteration
@@ -324,30 +445,19 @@ while True:
     if iter_num % eval_interval == 0 and master_process:
         losses = estimate_loss()
         print(
-            f"step {iter_num}: train loss {losses['train']:.4f}, val loss {losses['val']:.4f}, tokens: {total_tokens_processed:,}"
+            f"step {iter_num}: train loss {losses['train']:.4f}, val loss {losses['val']:.4f}"
         )
-        elapsed_time = time.time() - eval_time
-        elapsed_tokens = total_tokens_processed - iter_tokens_processed
-        tokens_per_sec = (
-            total_tokens_processed / elapsed_time if elapsed_time != 0 else 0
-        )
-        eval_time = time.time()
-        iter_tokens_processed = total_tokens_processed
         if wandb_log:
             wandb.log(
                 {
                     "iter": iter_num,
-                    "total_tokens": total_tokens_processed,
-                    "tokens/sec": tokens_per_sec,
                     "train/loss": losses["train"],
                     "val/loss": losses["val"],
                     "lr": lr,
-                    "mfu": running_mfu * 100,
+                    "mfu": running_mfu * 100,  # convert to percentage
+                    "tokens": iter_num * tokens_per_iter,
                 }
             )
-
-    # Separate checkpoint saving (less frequent)
-    if iter_num % save_interval == 0 and master_process:
         if losses["val"] < best_val_loss or always_save_checkpoint:
             best_val_loss = losses["val"]
             if iter_num > 0:
@@ -358,7 +468,6 @@ while True:
                     "iter_num": iter_num,
                     "best_val_loss": best_val_loss,
                     "config": config,
-                    "total_tokens_processed": total_tokens_processed,
                 }
                 print(f"saving checkpoint to {out_dir}")
                 torch.save(checkpoint, os.path.join(out_dir, "ckpt.pt"))
@@ -382,15 +491,9 @@ while True:
                 loss / gradient_accumulation_steps
             )  # scale the loss to account for gradient accumulation
         # immediately async prefetch next batch while model is doing the forward pass on the GPU
-        t = iter_num / max_iters
-        curriculum_level = (
-            1 if t >= 0.75 else max(1, int(99 / (1 + np.exp(12 * t - 6))))
-        )
-        X, Y, _block_size = get_batch("train", curriculum_level)
+        X, Y = get_batch("train")
         # backward pass, with gradient scaling if training in fp16
         scaler.scale(loss).backward()
-    tokens_this_iter = gradient_accumulation_steps * batch_size * _block_size
-    total_tokens_processed += tokens_this_iter
     # clip the gradient
     if grad_clip != 0.0:
         scaler.unscale_(optimizer)
@@ -413,7 +516,7 @@ while True:
             mfu = raw_model.estimate_mfu(batch_size * gradient_accumulation_steps, dt)
             running_mfu = mfu if running_mfu == -1.0 else 0.9 * running_mfu + 0.1 * mfu
         print(
-            f"iter {iter_num}: loss {lossf:.4f}, time {dt*1000:.2f}ms, mfu {running_mfu*100:.2f}%, BS {_block_size}, Tokens {total_tokens_processed}"
+            f"iter {iter_num}: loss {lossf:.4f}, time {dt*1000:.2f}ms, mfu {running_mfu*100:.2f}%"
         )
     iter_num += 1
     local_iter_num += 1
