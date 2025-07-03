@@ -146,8 +146,8 @@ def get_batch(split, block_size_multiple=100):
 
     ix = torch.randint(len(data) - _content_length, (batch_size,))
 
-    x = torch.zeros((batch_size, block_size), dtype=torch.int64)
-    y = torch.zeros((batch_size, block_size), dtype=torch.int64)
+    x = torch.zeros((batch_size, block_size), dtype=torch.int64, device=device)
+    y = torch.zeros((batch_size, block_size), dtype=torch.int64, device=device)
 
     for i, start_idx in enumerate(ix):
         content = torch.from_numpy(
@@ -322,6 +322,8 @@ while True:
     # evaluate the loss on train/val sets and write checkpoints
     if iter_num % eval_interval == 0 and master_process:
         losses = estimate_loss()
+        if eval_train != True:
+            losses["train"] = "N/A"
         print(
             f"step {iter_num}: train loss {losses['train']:.4f}, val loss {losses['val']:.4f}, tokens: {total_tokens_processed:,}"
         )
