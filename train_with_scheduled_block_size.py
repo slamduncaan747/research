@@ -138,13 +138,9 @@ def get_batch(split, block_size_multiple=100):
     # We recreate np.memmap every batch to avoid a memory leak, as per
     # https://stackoverflow.com/questions/45132940/numpy-memmap-memory-usage-want-to-iterate-once/61472122#61472122
     if split == "train":
-        data = np.memmap(
-            "/content/drive/MyDrive/tinystories/train.bin", dtype=np.uint16, mode="r"
-        )
+        data = np.memmap("/content/drive/MyDrive/train.bin", dtype=np.uint16, mode="r")
     else:
-        data = np.memmap(
-            "/content/drive/MyDrive/tinystories/val.bin", dtype=np.uint16, mode="r"
-        )
+        data = np.memmap("/content/drive/MyDrive/val.bin", dtype=np.uint16, mode="r")
     ix = torch.randint(len(data) - block_size, (batch_size,))
     _block_size = int(block_size * (1 / block_size_multiple))
     x = torch.stack(
