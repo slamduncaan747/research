@@ -136,32 +136,31 @@ data_dir = os.path.join("../../tmp", dataset)
 
 
 def get_batch(split, block_size_multiple=100):
-    # We recreate np.memmap every batch to avoid a memory leak, as per
-    # https://stackoverflow.com/questions/45132940/numpy-memmap-memory-usage-want-to-iterate-once/61472122#61472122
     if split == "train":
         data = np.memmap("../../tmp/tinystories/train.bin", dtype=np.uint16, mode="r")
     else:
         data = np.memmap("../../tmp/tinystories/val.bin", dtype=np.uint16, mode="r")
-    ix = torch.randint(len(data) - block_size, (batch_size,))
-    _block_size = int(block_size * (1 / block_size_multiple))
-    x = torch.stack(
-        [torch.from_numpy((data[i : i + _block_size]).astype(np.int64)) for i in ix]
-    )
-    y = torch.stack(
-        [
-            torch.from_numpy((data[i + 1 : i + 1 + _block_size]).astype(np.int64))
-            for i in ix
-        ]
-    )
 
-    if device_type == "cuda":
-        # pin arrays x,y, which allows us to move them to GPU asynchronously (non_blocking=True)
-        x, y = x.pin_memory().to(device, non_blocking=True), y.pin_memory().to(
-            device, non_blocking=True
+    _content_length = int(block_size * (1 / block_size_multiple))
+    padding_length = block_size - _content_length
+
+    ix = torch.randint(len(data) - _content_length, (batch_size,))
+
+    x = torch.zeros((batch_size, block_size), dtype=torch.int64)
+    y = torch.zeros((batch_size, block_size), dtype=torch.int64)
+
+    for i, start_idx in enumerate(ix):
+        content = torch.from_numpy(
+            (data[start_idx : start_idx + _content_length + 1]).astype(np.int64)
         )
-    else:
-        x, y = x.to(device), y.to(device)
-    return x, y, _block_size
+
+        # Put padding first, then content
+        x[i, padding_length:] = content[:-1]  # Input: padding + content
+        y[i, padding_length:] = content[1:]  # Target: padding + shifted content
+        # First padding_length positions remain 0 for both x and y
+
+    # ... rest of your cuda/device code
+    return x, y, _content_length
 
 
 # init these up here, can override if init_from='resume' (i.e. from a checkpoint)
