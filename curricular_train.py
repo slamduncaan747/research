@@ -136,7 +136,7 @@ ctx = (
 )
 
 
-def load_curriculum_metadata(data_dir="curriculum_bins"):
+def load_curriculum_metadata(data_dir="../../tmp/curriculum_bins"):
     """Load metadata about available clusters"""
     global metadata, curriculum_dir
     curriculum_dir = data_dir
