@@ -35,6 +35,7 @@ from model import GPTConfig, GPT
 out_dir = "out"
 eval_interval = 2000
 save_interval = eval_interval
+eval_train = False  # if True, also evaluate on the training set
 log_interval = 1
 eval_iters = 200
 eval_only = False  # if True, script exits right after the first eval
@@ -131,16 +132,16 @@ ctx = (
 )
 
 # poor man's data loader
-data_dir = os.path.join("/tmp", dataset)
+data_dir = os.path.join("../../tmp", dataset)
 
 
 def get_batch(split, block_size_multiple=100):
     # We recreate np.memmap every batch to avoid a memory leak, as per
     # https://stackoverflow.com/questions/45132940/numpy-memmap-memory-usage-want-to-iterate-once/61472122#61472122
     if split == "train":
-        data = np.memmap(os.path.join(data_dir, "train.bin"), dtype=np.uint16, mode="r")
+        data = np.memmap("../../tmp/tinystories/train.bin", dtype=np.uint16, mode="r")
     else:
-        data = np.memmap(os.path.join(data_dir, "val.bin"), dtype=np.uint16, mode="r")
+        data = np.memmap("../../tmp/tinystories/val.bin", dtype=np.uint16, mode="r")
     ix = torch.randint(len(data) - block_size, (batch_size,))
     _block_size = int(block_size * (1 / block_size_multiple))
     x = torch.stack(
@@ -263,7 +264,11 @@ if ddp:
 def estimate_loss():
     out = {}
     model.eval()
-    for split in ["train", "val"]:
+    if eval_train:
+        splits = ["train", "val"]
+    else:
+        splits = ["val"]
+    for split in splits:
         losses = torch.zeros(eval_iters)
         for k in range(eval_iters):
             X, Y, _block_size = get_batch(split, 1)
