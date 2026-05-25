@@ -38,7 +38,7 @@ from model import GPTConfig, GPT
 # I/O
 out_dir = "out"
 eval_interval = 2000
-eval_train = False  # if True, also evaluate on the training set
+eval_train = True  # if True, also evaluate on the training set
 save_interval = 0
 log_interval = 1
 eval_iters = 200
@@ -136,7 +136,7 @@ ctx = (
 )
 
 
-def load_curriculum_metadata(data_dir="../../tmp/curriculum_bins"):
+def load_curriculum_metadata(data_dir="./curriculum_bins"):
     """Load metadata about available clusters"""
     global metadata, curriculum_dir
     curriculum_dir = data_dir
@@ -159,10 +159,10 @@ load_curriculum_metadata("curriculum_bins")
 
 cluster_files = {}
 metadata = None
-curriculum_dir = "curriculum_bins"  # Update this path as needed
+curriculum_dir = "../../temp/curriculum_bins"  # Update this path as needed
 
 
-def get_batch(split, block_size, batch_size, device_type, device, mode="random"):
+def get_batch(split, mode="random"):
     """
     Get a batch of data from curriculum bins
 
@@ -181,7 +181,7 @@ def get_batch(split, block_size, batch_size, device_type, device, mode="random")
 
     # Handle validation split
     if split == "val":
-        data = np.memmap(f"{curriculum_dir}/val.bin", dtype=np.uint16, mode="r")
+        data = np.memmap(f"../../tmp/clusters/val.bin", dtype=np.uint16, mode="r")
         return create_batch_from_data(data, block_size, batch_size, device_type, device)
 
     # Handle training split
@@ -213,7 +213,7 @@ def get_random_batch(block_size, batch_size, device_type, device):
         cluster_id = random.choice(available_clusters)
 
         # Get data from that cluster
-        cluster_file = f"{curriculum_dir}/cluster_{cluster_id}.bin"
+        cluster_file = f"../../tmp/clusters/cluster_{cluster_id}.bin"
         data = np.memmap(cluster_file, dtype=np.uint16, mode="r")
 
         # Random position in this cluster
@@ -236,7 +236,7 @@ def get_random_batch(block_size, batch_size, device_type, device):
     if len(batch_samples) == 0:
         # Fallback: use first cluster if no valid samples
         cluster_id = available_clusters[0]
-        cluster_file = f"{curriculum_dir}/cluster_{cluster_id}.bin"
+        cluster_file = f"../../tmp/clusters/cluster_{cluster_id}.bin"
         data = np.memmap(cluster_file, dtype=np.uint16, mode="r")
         return create_batch_from_data(data, block_size, batch_size, device_type, device)
 
@@ -261,7 +261,7 @@ def get_random_batch(block_size, batch_size, device_type, device):
 def get_cluster_batch(cluster_id, block_size, batch_size, device_type, device):
     """Get a batch from a specific cluster"""
 
-    cluster_file = f"{curriculum_dir}/cluster_{cluster_id}.bin"
+    cluster_file = f"../../tmp/clusters/cluster_{cluster_id}.bin"
     data = np.memmap(cluster_file, dtype=np.uint16, mode="r")
 
     return create_batch_from_data(data, block_size, batch_size, device_type, device)
